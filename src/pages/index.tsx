@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { NextPage, GetStaticProps } from "next";
 import Api from "../services/api";
 
-import css from 'styled-jsx/css';
+import css from "styled-jsx/css";
 import { Container, Row, Col, ListGroup, Modal, Button } from "react-bootstrap";
 
 interface HomeProps {
@@ -41,11 +41,11 @@ const Home: NextPage<HomeProps> = ({ users }) => {
   const [posts, setPosts] = useState<Post[]>();
 
   const { className, styles } = css.resolve`
-  .modal-body {
-    max-height: 50vh;
-    overflow: overlay;
-  }
-`;
+    .modal-body {
+      max-height: 50vh;
+      overflow: overlay;
+    }
+  `;
 
   const handleClose = () => {
     setShow(false);
@@ -63,6 +63,11 @@ const Home: NextPage<HomeProps> = ({ users }) => {
 
   const handlerNumberPosts = () => {
     setNumbersPosts(numbersPosts + 3);
+  };
+  
+  const togglePosts = (id) => {
+    const newPosts = posts.filter((post) => post.id !== id);
+    setPosts(newPosts);
   };
 
   useEffect(() => {
@@ -103,6 +108,9 @@ const Home: NextPage<HomeProps> = ({ users }) => {
                 <ListGroup.Item key={post.id}>
                   <h5>{post.title}</h5>
                   <p>{post.body}</p>
+                  <Button onClick={() => togglePosts(post.id)}>
+                    Ocultar post
+                  </Button>
                 </ListGroup.Item>
               ) : (
                 ""
