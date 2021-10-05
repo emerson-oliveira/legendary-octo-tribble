@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { NextPage, GetStaticProps } from "next";
 import Api from "../services/api";
 import { Container, Row, Col, ListGroup, Modal, Button } from "react-bootstrap";
@@ -24,15 +24,26 @@ interface User {
   };
 }
 
+interface Post {
+  userId: number;
+  id: number;
+  title: string;
+  body: string;
+  visible?: boolean;
+}
+
 const Home: NextPage<HomeProps> = ({ users }) => {
   const [numberUsers, setNumberUsers] = useState<number>(3);
   const [show, setShow] = useState<boolean>(false);
+  const [user, setUser] = useState<User>();
+  const [posts, setPosts] = useState<Post[]>();
 
   const handleClose = () => {
     setShow(false);
   };
 
-  const handlerModal = () => {
+  const handlerModal = (author: User) => {
+    setUser(author);
     setShow(!show);
   };
 
@@ -40,6 +51,14 @@ const Home: NextPage<HomeProps> = ({ users }) => {
     setNumberUsers(numberUsers + 3);
   };
 
+  useEffect(() => {
+    Api
+      .get(`/posts?userId=${user?.id}`)
+      .then((response) => {
+        setPosts(response.data);
+      })
+      .catch((error) => console.log(error));
+  }, [user]);
   return (
     <Container>
       <Row>
@@ -48,27 +67,31 @@ const Home: NextPage<HomeProps> = ({ users }) => {
             {users.map((user, index) =>
               index < numberUsers ? (
                 <ListGroup.Item key={user.id}>
-                  <Button variant="link" onClick={handlerModal}>
-                    {user.name}
-                  </Button>
+                    <Button variant="link" onClick={() => handlerModal(user)}>
+                      {user.name}
+                    </Button>
                 </ListGroup.Item>
               ) : (
                 ""
               )
             )}
           </ListGroup>
-
           <Button onClick={handlerNumberUsers}>mostrar mais</Button>
         </Col>
       </Row>
       <Modal show={show} onHide={handleClose} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Lorem ipsum dolor sit amet</Modal.Title>
+          <Modal.Title>{user?.name}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer quis
-          tortor sit amet ipsum imperdiet accumsan a nec nunc. Vestibulum ac
-          arcu id eros laoreet molestie nec nec mi.
+        {posts?.map((post, index) => (index < 3 ? (
+              <ListGroup key={post.id}>
+                <h5>{post.title}</h5>
+                <p>{post.body}</p>
+              </ListGroup>
+            ) : (
+              ''
+            )))}
         </Modal.Body>
       </Modal>
     </Container>
