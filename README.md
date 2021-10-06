@@ -15,3 +15,6 @@ npm run dev
 - [React Bootstrap](https://react-bootstrap.github.io/)
 - [Typescript](https://www.typescriptlang.org/)
 - [Axios](https://axios-http.com/docs/intro)
+
+##### Video Explicativo:
+https://vimeo.com/623945695
